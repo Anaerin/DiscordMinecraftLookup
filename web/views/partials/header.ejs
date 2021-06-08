@@ -1,0 +1,29 @@
+<div class="PageTitle">Minecraft Server Authorization</div>
+<% if (locals.title) { -%>
+	<%- include('partials/pageSubTitle', {title: locals.title}) %>
+		<% } %>
+			<%_ if (locals.loggedIn) { -%>
+				<%- include('partials/userLoginStatus', { user: locals.user, displayName: locals.user.displayName, logo: locals.user.profileImageURL }) %>
+			<%_ } -%>
+			<ul class="MenuBar">
+				<% if (locals.menu) { %>
+					<% locals.menu.forEach(function(menuitem) { %>
+						<li<% if (menuitem.active) { %> class="active" <% } %>>
+							<a href="<%= menuitem.url %>">
+								<%= menuitem.name %>
+							</a>
+						</li>
+					<% }) %>
+				<% } %>
+			</ul>
+			<% if (locals.subMenu) { %>
+				<ul class="SubMenuBar">
+					<% locals.subMenu.forEach(function(menuitem) { %>
+						<li<% if (menuitem.active) { %> class="active" <% } %>>
+							<a href="<%= menuitem.url %>">
+								<%= menuitem.name %>
+							</a>
+						</li>
+					<% }) %>
+				</ul>
+			<% } %>
