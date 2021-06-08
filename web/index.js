@@ -2,6 +2,7 @@
 import express from "express";
 import expressSession from "express-session";
 import path from "path";
+import log from "../lib/log.js";
 
 const app = express();
 app.set("view engine", "ejs");
@@ -19,14 +20,19 @@ class Routes {
 	}
 	Root = (req, res, next) => {
 		res.send("Hello world!");
-		next();
+		return next();
 	}
 }
 let routes = new Routes();
 
 app.use((err, req, res, next) => {
 	res.status(500);
-	res.send(`Something went wrong, please inform Anaerin: ${err.stack}`);
+	res.render("main", {
+		title: "Error",
+		content: `An error occurred. Please inform Anaerin\n<br><pre>${err.stack}</pre>`
+	});
+	log.error(`Error occurred accessing ${req.originalUrl}: ${err.stack}`);
+	return next();
 });
 
 app.get("/", routes.Root);
