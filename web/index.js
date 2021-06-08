@@ -14,15 +14,38 @@ app.use(expressSession({
 	saveUninitialized: false
 }));
 
+app.use((req, res, next) => {
+	if (req.session.loggedIn) {
+		req.session.user = "Blah";
+		res.locals.loggedIn = false;
+		res.locals.menu = [{
+			name: "Logout",
+			url: "/logout"
+		}];
+	} else {
+		res.locals.loggedIn = false;
+		res.locals.menu = [{
+			name: "Login",
+			url: "/login"
+		}];
+	}
+	return next();
+});
+
 class Routes {
 	constructor() {
 
 	}
 	Root = (req, res, next) => {
-		res.send("Hello world!");
+		res.render("main",{
+			title: "Homepage",
+			content: `Things go here. Not yet, but eventually.`
+		});
 		return next();
 	}
+	CSS = express.static("web/css");
 }
+
 let routes = new Routes();
 
 app.use((err, req, res, next) => {
@@ -36,4 +59,13 @@ app.use((err, req, res, next) => {
 });
 
 app.get("/", routes.Root);
+app.get("/css", routes.CSS);
+app.use((req, res, next) => {
+	res.status(404);
+	res.render("main", {
+		title: "Error",
+		content: `Couldn't find page ${req.path}`
+	});
+	return next();
+});
 export default app;
