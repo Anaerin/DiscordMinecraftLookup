@@ -1,0 +1,11 @@
+{
+  "name": "discord-minecraft-whitelist",
+  "version": "1.0.0",
+  "description": "Allows a user to login via discord, confirms they're a member of a specified guild, requests their minecraft username, looks up their UUID, adds it to the specified whitelist, and reloads that whitelist",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Robert Johnston <anaerin@gmail.com>",
+  "license": "MIT"
+}
