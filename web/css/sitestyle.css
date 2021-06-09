@@ -1,0 +1,115 @@
+body {
+	border: 0;
+	margin: 0;
+	padding: 0;
+	font-family: sans-serif;
+}
+
+header {
+	background-color: blue;
+	background-image: linear-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+	display: grid;
+	width: 100%;
+	top: 0px;
+	grid-template: 2fr 1fr / 2fr 1fr;
+	grid-template-areas: "pagetitle userlogo" "pagesubtitle userlogo" "pagemenu pagemenu" "pagesubmenu pagesubmenu";
+}
+
+header .PageTitle {
+	color: white;
+	font-size: 2em;
+	padding: 0.2em;
+	height: 1em;
+	grid-area: pagetitle;
+}
+
+header .PageSubTitle {
+	color: white;
+	font-size: 1.5em;
+	padding: 0.2em;
+	height: 1.2em;
+	grid-area: pagesubtitle;
+}
+
+header .MenuBar {
+	list-style-type: none;
+	display: flex;
+	flex-direction: row;
+	padding: 0;
+	margin: 0;
+	align-items: stretch;
+	height: 1.6em;
+	font-size: 1em;
+	grid-area: pagemenu;
+	background-color: blue;
+}
+
+header .SubMenuBar {
+	list-style-type: none;
+	display: flex;
+	flex-direction: row;
+	padding: 0;
+	margin: 0;
+	align-items: stretch;
+	height: 1.6em;
+	font-size: 1em;
+	grid-area: pagesubmenu;
+	background-color: rgb(64, 64, 255);
+}
+
+header .LoginStatus {
+	color: white;
+	grid-area: pagemenu;
+	justify-self: end;
+	z-index: 10;
+	font-size: 1em;
+	padding-top: 0.2em;
+}
+
+header .UserLogo {
+	height: 6.8em;
+	grid-area: userlogo;
+	justify-self: end;
+}
+
+header .MenuBar li,
+header .SubMenuBar li {
+	padding: 0.2em;
+	border-right: 0.1em solid black;
+	display: flex;
+	align-items: center;
+}
+
+header .MenuBar li:hover,
+header .SubMenuBar li:hover {
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+header .MenuBar li:active,
+header .MenuBar li.active,
+header .SubMenuBar li:active,
+header .SubMenuBar li.active {
+	background-color: rgba(0, 0, 0, 0.25);
+}
+
+header .MenuBar li:last-child,
+header .SubMenuBar li:last-child {
+	border-right: none;
+}
+
+header .MenuBar a,
+header .SubMenuBar a {
+	color: white;
+	text-decoration: none;
+}
+
+header .MenuBar li.active a,
+header .MenuBar li:active a,
+header .SubMenuBar li.active a,
+header .SubMenuBar li:active a {
+	text-decoration: underline;
+}
+
+.hidden {
+	display: none;
+}
