@@ -4,6 +4,7 @@ import db from "../lib/db.js";
 import spawn from "child_process";
 import config from "../config.js";
 import path from "path";
+import { isInGuild } from "../lib/util.js";
 
 const getter = axios.create()
 
@@ -14,7 +15,11 @@ export function getMCUsername(req, res) {
 		res.redirect("/");
 		return;
 	}
-	if (req.session.userRecord && req.session.userRecord.minecraftUser && req.session.userRecord.minecraftUser.id) {
+	if (!isInGuild(req.session.userRecord)) {
+		res.redirect("/notInGuild");
+		return;
+	}
+	if (req?.session?.userRecord?.minecraftUser?.id) {
 		// We already have the minecraft UserID...?
 		res.redirect("/mcUserStatus");
 		return;
@@ -26,31 +31,67 @@ export async function postMCUsername(req, res) {
 		res.redirect("/");
 		return;
 	}
-	if (req.session.userRecord && req.session.userRecord.minecraftUser && req.session.userRecord.minecraftUser.id) {
+	if (!isInGuild(req.session.userRecord)) {
+		res.redirect("/notInGuild");
+		return;
+	}
+	if (req?.session?.userRecord?.minecraftUser?.id) {
 		// We already have the minecraft UserID...?
 		res.redirect("/mcUserStatus");
 		return;
 	}
+	let mcUserdetails;
 	try {
-		let mcUserdetails = await axios.get("https://api.mojang.com/users/profiles/minecraft/" + req.data.username);
+		mcUserdetails = await axios.get("https://api.mojang.com/users/profiles/minecraft/" + req.data.username);
 	} catch (error) {
 		log.error(`Problem with getting MC user details: ${error}`);
 		res.render("main", {
 			title: "Error",
 			content: `Error getting MC user details\n<br><pre>${error}</pre>`
 		});
+		return;
+	}
+	let mcUser;
+	//Dirty trick here. Assignment is truthy based on value assigned.
+	while (mcUser = database.getByMinecraftID(makeDashedUUID(mcUserdetails.id))) { //No, I don't mean ==.
+		database.delete(mcUser.id);
 	}
 	let userRecord = database.getByID(req.session.userRecord.id);
 	userRecord.minecraftUser.id = makeDashedUUID(mcUserdetails.id);
 	userRecord.minecraftUser.name = mcUserdetails.name;
-	database.update(userRecord);
+	database.update(userRecord, true);
 	req.session.userRecord = userRecord;
+	await updateWhitelist(req.session.userRecord.id, req.session.userRecord.name);
 	res.redirect("/mcUserStatus");
+}
+export async function getMCUserStatus(req, res) {
+	if (!req.session.isLoggedIn) {
+		res.redirect("/");
+		return;
+	}
+	if (!isInGuild(req.session.userRecord)) {
+		res.redirect("/notInGuild");
+		return;
+	}	
+	if (!(req?.session?.userRecord?.minecraftUser?.id)) {
+		// We don't have the minecraft UserID...?
+		res.redirect("/mcUserRequest");
+		return;
+	}
+	let banList = await readBanList();
+	banRecord = banList.find((elem) => elem.uuid == req.session.userRecord.minecraftUser.id);
+	if (banRecord) req.session.userRecord.ban = banRecord;
 	
 }
 
-function updateWhitelist(id, name) {
-	let rawFile = await fs.readFile(path.join(config.mcServerPath,config.mcServerName,"whitelist.json"));
+async function readBanList() {
+	let rawFile = await fs.readFile(path.join(config.mcServerPath, config.mcServerName, "banned-players.json"));
+	let JSONFile = JSON.parse(rawFile);
+	return JSONFile;
+}
+
+async function updateWhitelist(id, name) {
+	let rawFile = await fs.readFile(path.join(config.mcServerPath, config.mcServerName, "whitelist.json"));
 	let JSONFile = JSON.parse(rawFile);
 	JSONFile.forEach((entry) => {
 		let record = database.getByMinecraftID(entry.uuid);

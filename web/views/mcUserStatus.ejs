@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<%- include('partials/head') %>
+	</head>
+	<body>
+		<header>
+			<%- include('partials/header') %>
+		</header>
+		<%- content %>
+		Discord account <%=locals.displayName%><br>
+		Minecraft account: <%=locals.userRecord.minecraftUser.name%><br>
+		Whitelist status: <%=locals.userRecord.whitelisted%><br>
+		<% if (locals.userRecord.ban) { %>
+		Ban status: Banned on <%=locals.userRecord.ban.created%><br>
+		Ban reason: <%=locals.userRecord.ban.reason%>
+		<% } %>
+	</body>
+</html>

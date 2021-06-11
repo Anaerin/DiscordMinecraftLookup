@@ -5,7 +5,8 @@ import expressWinston from "express-winston";
 import path from "path";
 import log from "../lib/log.js";
 import { fileURLToPath } from "url";
-import { oAuth, code } from "../oauth.js";
+import { getDiscordAuthURL, getDiscordReceiveToken } from "./discord.js";
+import { getMCUsername, postMCUsername, getMCUserStatus } from "./minecraft.js";
 
 const app = express();
 app.set("view engine", "ejs");
@@ -69,8 +70,19 @@ app.get("/logout", (req, res) => {
 	});
 });
 
-app.get("/login", oAuth);
-app.get("/code", code);
+app.get("/login", getDiscordAuthURL);
+app.get("/code", getDiscordReceiveToken);
+
+app.get("/mcUserRequest", getMCUsername);
+app.post("/mcUserRequest", postMCUsername);
+app.get("/mcUserStatus", getMCUserStatus);
+
+app.get("/notInGuild", (req, res) => {
+	res.render("main", {
+		title: "Not in correct guild",
+		content: "We couldn't verify your membership to the correct discord guild. Please check and try again."
+	});
+});
 
 app.use((req, res, next) => {
 	res.status(404);
