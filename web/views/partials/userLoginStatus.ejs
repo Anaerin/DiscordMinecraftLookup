@@ -1,2 +1,2 @@
-<div class="LoginStatus">Logged in as <%= displayName %></div>
-<img class="UserLogo" src="<%= logo%>" alt="<%= displayName %>'s logo" />
+<div class="LoginStatus">Logged in as <%= locals.displayName %></div>
+<% if (locals.userRecord.minecraftUser.name) { %><img class="UserLogo" src="https://cravatar.eu/helmhead/<%=locals.userRecord.minecraftUser.name%>/190.png" alt="<%= locals.displayName %>'s logo" />

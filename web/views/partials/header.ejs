@@ -1,9 +1,9 @@
 <div class="PageTitle">Minecraft Server Authorization</div>
 <% if (locals.title) { -%>
-	<%- include('pageSubTitle', {title: locals.title}) %>
+	<%- include('pageSubTitle') %>
 		<% } %>
 			<%_ if (locals.loggedIn) { -%>
-				<%- include('userLoginStatus', { user: locals.user, displayName: locals.user.displayName, logo: locals.user.profileImageURL }) %>
+				<%- include('userLoginStatus') %>
 			<%_ } -%>
 			<ul class="MenuBar">
 				<% if (locals.menu) { %>

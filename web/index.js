@@ -5,6 +5,7 @@ import expressWinston from "express-winston";
 import path from "path";
 import log from "../lib/log.js";
 import { fileURLToPath } from "url";
+import { oAuth, code } from "../oauth.js";
 
 const app = express();
 app.set("view engine", "ejs");
@@ -21,39 +22,27 @@ app.use(expressWinston.logger({
 	winstonInstance: log
 }));
 
+app.use(express.urlencoded());
+
 app.use((req, res, next) => {
 	if (req.session.loggedIn) {
-		req.session.user = "Blah";
-		res.locals.loggedIn = false;
+		res.locals.loggedIn = true;
 		res.locals.menu = [{
 			name: "Logout",
 			url: "/logout"
 		}];
+		res.locals.displayName = req.session.discordUsername;
+		if (req.session.userRecord) res.locals.userRecord = req.session.userRecord;
 	} else {
 		res.locals.loggedIn = false;
 		res.locals.menu = [{
 			name: "Login",
-			url: "/login"
+			url: "/"
 		}];
 	}
-	log.info("Applied loggedIn check");
+	log.debug("Applied loggedIn check");
 	return next();
 });
-
-class Routes {
-	constructor() {
-
-	}
-	Root = (req, res) => {
-		log.info("Accessed homepage");
-		res.render("main",{
-			title: "Homepage",
-			content: `Things go here. Not yet, but eventually.`
-		});
-	}
-}
-
-let routes = new Routes();
 
 app.use((err, req, res, next) => {
 	res.status(500);
@@ -66,7 +55,22 @@ app.use((err, req, res, next) => {
 });
 app.use("/css", express.static("web/css"));
 
-app.get("/", routes.Root);
+app.get("/", (req, res) => {
+	log.debug("Accessed homepage");
+	res.render("main",{
+		title: "Homepage",
+		content: `Things go here. Not yet, but eventually.`
+	});
+});
+app.get("/logout", (req, res) => {
+	req.session.destroy((err) => {
+		if (err) log.error(`Unable to destroy session: ${err}`);
+		res.redirect("/");
+	});
+});
+
+app.get("/login", oAuth);
+app.get("/code", code);
 
 app.use((req, res, next) => {
 	res.status(404);
