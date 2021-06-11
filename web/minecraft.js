@@ -81,7 +81,12 @@ export async function getMCUserStatus(req, res) {
 	let banList = await readBanList();
 	banRecord = banList.find((elem) => elem.uuid == req.session.userRecord.minecraftUser.id);
 	if (banRecord) req.session.userRecord.ban = banRecord;
-	
+	res.locals.userRecord = req.session.userRecord;
+	res.render("mcUserStatus", {
+		title: "Status",
+		content: ""
+	});
+	return;
 }
 
 async function readBanList() {
