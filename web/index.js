@@ -7,6 +7,8 @@ import log from "../lib/log.js";
 import { fileURLToPath } from "url";
 import { getDiscordAuthURL, getDiscordReceiveToken } from "./discord.js";
 import { getMCUsername, postMCUsername, getMCUserStatus } from "./minecraft.js";
+import database from "../lib/db.js";
+const db = new database();
 
 const app = express();
 app.set("view engine", "ejs");
@@ -23,25 +25,26 @@ app.use(expressWinston.logger({
 	winstonInstance: log
 }));
 
-app.use(express.urlencoded());
+app.use(express.urlencoded({
+	extended: true
+}));
 
 app.use((req, res, next) => {
-	if (req.session.loggedIn) {
+	if (req.session.isLoggedIn) {
 		res.locals.loggedIn = true;
 		res.locals.menu = [{
 			name: "Logout",
 			url: "/logout"
 		}];
-		res.locals.displayName = req.session.discordUsername;
-		if (req.session.userRecord) res.locals.userRecord = req.session.userRecord;
+		if (!req.session.userRecord) req.session.userRecord = db.getByID(req.session.userID);
+		res.locals.userRecord = req.session.userRecord;
 	} else {
 		res.locals.loggedIn = false;
 		res.locals.menu = [{
 			name: "Login",
-			url: "/"
+			url: "/login"
 		}];
 	}
-	log.debug("Applied loggedIn check");
 	return next();
 });
 

@@ -8,7 +8,7 @@
 			<%- include('partials/header') %>
 		</header>
 		<%- content %>
-		Discord account <%=locals.displayName%><br>
+		Discord account: <%= locals.userRecord.discordUser.username %>#<%= locals.userRecord.discordUser.discriminator%><br>
 		Minecraft account: <%=locals.userRecord.minecraftUser.name%><br>
 		Whitelist status: <%=locals.userRecord.whitelisted%><br>
 		<% if (locals.userRecord.ban) { %>

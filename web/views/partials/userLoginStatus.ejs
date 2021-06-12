@@ -1,2 +1,10 @@
-<div class="LoginStatus">Logged in as <%= locals.displayName %></div>
-<% if (locals.userRecord.minecraftUser.name) { %><img class="UserLogo" src="https://cravatar.eu/helmhead/<%=locals.userRecord.minecraftUser.name%>/190.png" alt="<%= locals.displayName %>'s logo" />
+<div class="DiscordStatus">
+	<img class="UserLogo" src="https://cdn.discordapp.com/avatars/<%=locals.userRecord.discordUser.id%>/<%=locals.userRecord.discordUser.avatar%>.gif" alt="<%= locals.userRecord.discordUser.username %>#<%= locals.userRecord.discordUser.discriminator%>'s Avatar">
+	<div class="LoginStatus">Logged into Discord as <%= locals.userRecord.discordUser.username %>#<%= locals.userRecord.discordUser.discriminator%></div>
+</div>
+<% if (locals.userRecord.minecraftUser.name) { %>
+	<div class="MinecraftStatus">
+		<img class="UserLogo" src="https://cravatar.eu/helmhead/<%=locals.userRecord.minecraftUser.name%>/190.png" alt="<%= locals.userRecord.discordUser.username %>#<%= locals.userRecord.discordUser.discriminator%>'s logo" />
+		<div class="LoginStatus">Linked to Minecraft account <%= locals.userRecord.minecraftUser.name%></div>		
+	</div>
+<% } %>

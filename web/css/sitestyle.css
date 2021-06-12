@@ -11,15 +11,15 @@ header {
 	display: grid;
 	width: 100%;
 	top: 0px;
-	grid-template: 2fr 1fr / 2fr 1fr;
-	grid-template-areas: "pagetitle userlogo" "pagesubtitle userlogo" "pagemenu pagemenu" "pagesubmenu pagesubmenu";
+	grid-template: 1fr 1fr / 2fr 1fr;
+	grid-template-areas: "pagetitle discorddeets" "pagesubtitle minecraftdeets" "pagemenu pagemenu" "pagesubmenu pagesubmenu";
 }
 
 header .PageTitle {
 	color: white;
 	font-size: 2em;
 	padding: 0.2em;
-	height: 1em;
+	/* height: 1em; */
 	grid-area: pagetitle;
 }
 
@@ -27,8 +27,10 @@ header .PageSubTitle {
 	color: white;
 	font-size: 1.5em;
 	padding: 0.2em;
+	margin-top: auto;
 	height: 1.2em;
 	grid-area: pagesubtitle;
+
 }
 
 header .MenuBar {
@@ -57,21 +59,33 @@ header .SubMenuBar {
 	background-color: rgb(64, 64, 255);
 }
 
-header .LoginStatus {
+header .DiscordStatus {
 	color: white;
-	grid-area: pagemenu;
-	justify-self: end;
+	grid-area: discorddeets;
 	z-index: 10;
 	font-size: 1em;
-	padding-top: 0.2em;
+	padding-top: 0em;
+	text-align: right;
 }
-
+header .MinecraftStatus {
+	color: white;
+	grid-area: minecraftdeets;
+	z-index: 10;
+	font-size: 1em;
+	padding-top: 0em;
+	text-align: right;
+}
 header .UserLogo {
-	height: 6.8em;
-	grid-area: userlogo;
-	justify-self: end;
+	height: 3em;
+	float: right;
 }
-
+header .DiscordStatus .LoginStatus, header .MinecraftStatus .LoginStatus {
+	margin-top: 1em;
+	padding-right: 4em;
+}
+header .MinecraftStatus .UserLogo {
+	float: right;
+}
 header .MenuBar li,
 header .SubMenuBar li {
 	padding: 0.2em;

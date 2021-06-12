@@ -3,6 +3,7 @@ import log from "../lib/log.js";
 import axios from "axios";
 import db from "../lib/db.js";
 import config from "../config.js";
+import { isInGuild } from "../lib/util.js";
 
 const getter = axios.create({
 	baseURL: "https://discord.com/api",
@@ -19,7 +20,7 @@ function randomCharacters(len) {
 const oAuthConfig = {
 	client: config.discordAuth,
 	auth: {
-		tokenHost: "discord.com",
+		tokenHost: "https://discord.com",
 		tokenPath: "/api/oauth2/token",
 		revokePath: "/api/oauth2/token/revoke",
 		authorizePath: "/api/oauth2/authorize"
@@ -42,8 +43,11 @@ export async function getDiscordReceiveToken(req, res) {
 	if (req.query.state == req.session.state) {
 		let authConfig = config.discordConfig;
 		authConfig.state = req.session.state;
+		authConfig.code = req.query.code;
+		let accessToken;
 		try {
-			const accessToken = await client.getToken(authConfig);
+			accessToken = await client.getToken(authConfig);
+			req.session.accessToken = accessToken.token;
 		} catch (error) {
 			log.error(`Unable to get Token: ${error}`);
 			res.render("main", {
@@ -52,20 +56,24 @@ export async function getDiscordReceiveToken(req, res) {
 			});
 			return;
 		}
-		req.session.accessToken = accessToken;
-		getter.defaults.headers.common["Authorization"] = "Bearer " + accessToken;
-		let userDetails = await getter.get("/users/@me");
+		getter.defaults.headers.common["Authorization"] = "Bearer " + accessToken.token['access_token'];
+		log.info(`Set authorization header: ${getter.defaults.headers.common["Authorization"]}`);
+		let userConn = await getter.get("/users/@me");
+		const userDetails = userConn.data;
+		//log.info(`Got userDetails: ${userDetails}`);
 		req.session.isLoggedIn = true;
 		req.session.discordUsername = userDetails.username + "#" + userDetails.discriminator;
-		req.session.discordUser = userDetails;
 		let userRecord = database.getByDiscordID(userDetails.id);
+		log.info(`Found user: ${JSON.stringify(userRecord)}`);
 		if (!userRecord) userRecord = database.createNew();
 		["id","username","discriminator","avatar","locale","flags","premium_type","public_flags","bot","system","mfa_enabled","verified"].forEach((property) => {
-			userRecord.discordUser[property] = userDetails[property];
+			userRecord['discordUser'][property] = userDetails[property];
 		});
 		let userGuilds = await getter.get("/users/@me/guilds");
-		userRecord.discordUser.guilds = userGuilds;
+		//log.info(`Got userGuilds: ${userGuilds}`);
+		userRecord.discordUser.isInGuild = isInGuild(userGuilds.data);
 		database.update(userRecord);
+		req.session.userID = userRecord.id;
 		req.session.userRecord = userRecord;
 		res.redirect("/mcUserRequest");
 	} else {

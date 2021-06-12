@@ -118,3 +118,4 @@ dist
 .pnp.*
 
 config.js
+users.json
