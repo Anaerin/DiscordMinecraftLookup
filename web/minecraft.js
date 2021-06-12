@@ -128,7 +128,7 @@ async function updateWhitelist(id, mcID, mcName) {
 	database.update(record); //Update the DB
 	fs.writeFileSync(path.join(config.mcServerPath, config.mcServerName, "whitelist.json"), JSON.stringify(JSONFile,null,2)); //And the whitelist.
 	/* 
-	const screen = spawn("screen", ["-S","mc-PhoenixsAssortedGoodies","-p","0","-X","stuff","/whitelist reload^M"],{
+	const screen = spawn("screen", ["-S","mc-" + config.mcServerName,"-p","0","-X","stuff","/whitelist reload^M"],{
 		cwd: path.join(config.mcServerPath, config.mcServerName),
 		uid: config.uid,
 		gid: config.gid
