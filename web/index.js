@@ -63,7 +63,7 @@ app.get("/", (req, res) => {
 	log.debug("Accessed homepage");
 	res.render("main",{
 		title: "Homepage",
-		content: `Things go here. Not yet, but eventually.`
+		content: `Welcome! Please <a href="/login">Log In</a> with Discord to continue.`
 	});
 });
 app.get("/logout", (req, res) => {
